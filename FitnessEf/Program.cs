@@ -5,32 +5,35 @@ using FitnessEf;
 // Создаем контекст для работы с БД
 using var db = new FitnessContext();
 
-Console.WriteLine("=== Задание 4: Список клиентов (Сортировка по Фамилии) ===");
+//Console.WriteLine("=== Задание 4: Список клиентов (Сортировка по Фамилии) ===");
 
 try
 {
-    Console.WriteLine("=== Задание 6: Добавление нового клиента ===");
+    Console.WriteLine("=== Задание 7: Изменение и удаление клиента ===");
 
-    // 1. Создаем объект нового клиента
-    var newClient = new Client
+    // 1. Ищем в базе нашего только что созданного клиента по его ID (69)
+    var clientToEdit = await db.Clients.FindAsync(69);
+
+    if (clientToEdit != null)
     {
-        FirstName = "Иван",
-        LastName = "Тестовый",
-        Phone = "+79991112233",
-        Email = "testivan@mail.com",
-        BirthDate = new DateOnly(1995, 5, 20),
-        Status = "active"
-    };
+        Console.WriteLine($"Нашли клиента: {clientToEdit.LastName}. Старый телефон: {clientToEdit.Phone}");
 
-    // 2. Ставим в очередь на добавление
-    db.Clients.Add(newClient);
+        // 2. Меняем ему телефон (ЭТО ИЗМЕНЕНИЕ)
+        clientToEdit.Phone = "+70000000000";
+        await db.SaveChangesAsync();
+        Console.WriteLine($"Телефон успешно изменен на: {clientToEdit.Phone}");
 
-    // 3. Отправляем команду INSERT в базу данных xz1
-    await db.SaveChangesAsync();
-
-    // EF Core автоматически заберет сгенерированный базой ID и запишет его в объект!
-    Console.WriteLine($"Успешно! Клиент добавлен. Ему присвоен ID: {newClient.ClientId}");
+        // 3. А теперь давай его удалим (ЭТО УДАЛЕНИЕ)
+        db.Clients.Remove(clientToEdit);
+        await db.SaveChangesAsync();
+        Console.WriteLine("Клиент успешно удален из базы данных xz1.");
+    }
+    else
+    {
+        Console.WriteLine("Клиент с ID 69 не найден в базе!");
+    }
 }
+
 
 
 catch (Exception ex)
