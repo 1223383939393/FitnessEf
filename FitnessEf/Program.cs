@@ -9,22 +9,29 @@ Console.WriteLine("=== Задание 4: Список клиентов (Сорт
 
 try
 {
-    // Задание 5: Выбираем только активных, сортируем по фамилии, 
-    // пропускаем 0 (первая страница) и берем ровно 5 записей
-    var clientsPage = await db.Clients
-        .Where(c => c.Status == "active")
-        .OrderBy(c => c.LastName)
-        .Skip(0)
-        .Take(5)
-        .ToListAsync();
+    Console.WriteLine("=== Задание 6: Добавление нового клиента ===");
 
-    Console.WriteLine($"=== Задание 5: Список активных клиентов (Страница 1, топ-5) ===");
-
-    foreach (var client in clientsPage)
+    // 1. Создаем объект нового клиента
+    var newClient = new Client
     {
-        Console.WriteLine($"ID: {client.ClientId} | {client.LastName} {client.FirstName} | Статус: {client.Status}");
-    }
+        FirstName = "Иван",
+        LastName = "Тестовый",
+        Phone = "+79991112233",
+        Email = "testivan@mail.com",
+        BirthDate = new DateOnly(1995, 5, 20),
+        Status = "active"
+    };
+
+    // 2. Ставим в очередь на добавление
+    db.Clients.Add(newClient);
+
+    // 3. Отправляем команду INSERT в базу данных xz1
+    await db.SaveChangesAsync();
+
+    // EF Core автоматически заберет сгенерированный базой ID и запишет его в объект!
+    Console.WriteLine($"Успешно! Клиент добавлен. Ему присвоен ID: {newClient.ClientId}");
 }
+
 
 catch (Exception ex)
 {
