@@ -8,7 +8,7 @@ public class Client
 	public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public DateOnly? BirthDate { get; set; }
-	public int? Phone { get; set; }
+	public string? Phone { get; set; }
 	public string Status { get; set; } = "active";
 	public DateOnly RegistrationDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 	public string? Email { get; set; }
