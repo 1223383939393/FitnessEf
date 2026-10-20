@@ -9,18 +9,23 @@ Console.WriteLine("=== Задание 4: Список клиентов (Сорт
 
 try
 {
-    // Запрос LINQ: выбираем всех клиентов и сортируем по LastName (фамилии)
-    var clients = await db.Clients
+    // Задание 5: Выбираем только активных, сортируем по фамилии, 
+    // пропускаем 0 (первая страница) и берем ровно 5 записей
+    var clientsPage = await db.Clients
+        .Where(c => c.Status == "active")
         .OrderBy(c => c.LastName)
+        .Skip(0)
+        .Take(5)
         .ToListAsync();
 
-    Console.WriteLine($"Успешно подключено к базе xz1. Найдено записей: {clients.Count}\n");
+    Console.WriteLine($"=== Задание 5: Список активных клиентов (Страница 1, топ-5) ===");
 
-    foreach (var client in clients)
+    foreach (var client in clientsPage)
     {
         Console.WriteLine($"ID: {client.ClientId} | {client.LastName} {client.FirstName} | Статус: {client.Status}");
     }
 }
+
 catch (Exception ex)
 {
     Console.WriteLine($"Ошибка при чтении базы: {ex.Message}");
