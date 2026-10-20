@@ -9,30 +9,22 @@ using var db = new FitnessContext();
 
 try
 {
-    Console.WriteLine("=== Задание 7: Изменение и удаление клиента ===");
+    Console.WriteLine("=== Задание 8: Фильтрация по NULL (Клиенты без Email) ===");
 
-    // 1. Ищем в базе нашего только что созданного клиента по его ID (69)
-    var clientToEdit = await db.Clients.FindAsync(69);
+    // LINQ-запрос: ищем всех, у кого Email равен null
+    var clientsWithoutEmail = await db.Clients
+        .Where(c => c.Email == null)
+        .OrderBy(c => c.LastName)
+        .ToListAsync();
 
-    if (clientToEdit != null)
+    Console.WriteLine($"Найдено клиентов без электронной почты: {clientsWithoutEmail.Count}\n");
+
+    foreach (var client in clientsWithoutEmail)
     {
-        Console.WriteLine($"Нашли клиента: {clientToEdit.LastName}. Старый телефон: {clientToEdit.Phone}");
-
-        // 2. Меняем ему телефон (ЭТО ИЗМЕНЕНИЕ)
-        clientToEdit.Phone = "+70000000000";
-        await db.SaveChangesAsync();
-        Console.WriteLine($"Телефон успешно изменен на: {clientToEdit.Phone}");
-
-        // 3. А теперь давай его удалим (ЭТО УДАЛЕНИЕ)
-        db.Clients.Remove(clientToEdit);
-        await db.SaveChangesAsync();
-        Console.WriteLine("Клиент успешно удален из базы данных xz1.");
-    }
-    else
-    {
-        Console.WriteLine("Клиент с ID 69 не найден в базе!");
+        Console.WriteLine($"ID: {client.ClientId} | {client.LastName} {client.FirstName} | Телефон: {client.Phone ?? "Не указан"}");
     }
 }
+
 
 
 
