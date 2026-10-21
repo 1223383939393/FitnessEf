@@ -5,24 +5,26 @@ namespace FitnessEf;
 
 public class FitnessContext : DbContext
 {
-	public DbSet<Client> Clients => Set<Client>();
+    public DbSet<Client> Clients => Set<Client>();
+    // НАДО ДОБАВИТЬ: Набор данных для посещений
+    public DbSet<Visit> Visits => Set<Visit>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            // Читаем строку из операционной системы (переменной окружения)
             var connectionString = Environment.GetEnvironmentVariable("FITNESS_EF_CONNECTION");
 
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new InvalidOperationException("Dont see FITNESS_EF_CONNECTION.");
 
-            // Указываем провайдер PostgreSQL (Npgsql)
             optionsBuilder.UseNpgsql(connectionString);
         }
     }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Конфигурация таблицы клиентов
         modelBuilder.Entity<Client>(entity =>
         {
             entity.ToTable("clients");
@@ -35,8 +37,37 @@ public class FitnessContext : DbContext
             entity.Property(c => c.Email).HasColumnName("email").HasMaxLength(254);
             entity.Property(c => c.RegistrationDate).HasColumnName("registration_date").HasColumnType("date").IsRequired();
             entity.Property(c => c.Status).HasColumnName("status").HasMaxLength(20).IsRequired();
+        });
 
+        // НАДО ДОБАВИТЬ: Конфигурация таблицы посещений и связи с клиентами
+        modelBuilder.Entity<Visit>(entity =>
+        {
+            entity.ToTable("visits");
+            entity.HasKey(v => v.VisitId);
+
+            entity.Property(v => v.VisitId)
+                  .HasColumnName("visit_id")
+                  .ValueGeneratedOnAdd();
+
+            entity.Property(v => v.ClientId)
+                  .HasColumnName("client_id")
+                  .IsRequired();
+
+            entity.Property(v => v.VisitDate)
+                  .HasColumnName("visit_date")
+                  .HasColumnType("date")
+                  .IsRequired();
+
+            entity.Property(v => v.Note)
+                  .HasColumnName("note")
+                  .HasMaxLength(500);
+
+            // Настройка связи "Один клиент — много посещений"
+            entity.HasOne(v => v.Client)
+                  .WithMany(c => c.Visits)
+                  .HasForeignKey(v => v.ClientId)
+                  .OnDelete(DeleteBehavior.Restrict); // Запрет удаления клиента при наличии посещений
         });
     }
-
 }
+    

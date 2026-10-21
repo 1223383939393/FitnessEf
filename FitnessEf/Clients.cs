@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FitnessEf;
 
@@ -13,4 +14,5 @@ public class Client
 	public DateOnly RegistrationDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 	public string? Email { get; set; }
 
+    public List<Visit> Visits { get; set; } = new();
 }

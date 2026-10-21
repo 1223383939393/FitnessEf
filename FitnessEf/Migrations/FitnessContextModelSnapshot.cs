@@ -52,9 +52,9 @@ namespace FitnessEf.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("last_name");
 
-                    b.Property<int?>("Phone")
+                    b.Property<string>("Phone")
                         .HasMaxLength(30)
-                        .HasColumnType("integer")
+                        .HasColumnType("character varying(30)")
                         .HasColumnName("phone");
 
                     b.Property<DateOnly>("RegistrationDate")
@@ -70,6 +70,51 @@ namespace FitnessEf.Migrations
                     b.HasKey("ClientId");
 
                     b.ToTable("clients", (string)null);
+                });
+
+            modelBuilder.Entity("FitnessEf.Visit", b =>
+                {
+                    b.Property<int>("VisitId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("visit_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VisitId"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer")
+                        .HasColumnName("client_id");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("note");
+
+                    b.Property<DateOnly>("VisitDate")
+                        .HasColumnType("date")
+                        .HasColumnName("visit_date");
+
+                    b.HasKey("VisitId");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("visits", (string)null);
+                });
+
+            modelBuilder.Entity("FitnessEf.Visit", b =>
+                {
+                    b.HasOne("FitnessEf.Client", "Client")
+                        .WithMany("Visits")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("FitnessEf.Client", b =>
+                {
+                    b.Navigation("Visits");
                 });
 #pragma warning restore 612, 618
         }
