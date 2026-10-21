@@ -13,6 +13,8 @@ public class Client
 	public string Status { get; set; } = "active";
 	public DateOnly RegistrationDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 	public string? Email { get; set; }
+    public string? Note { get; set; }
+
 
     public List<Visit> Visits { get; set; } = new();
 }
